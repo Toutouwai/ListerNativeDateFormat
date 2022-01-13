@@ -1,0 +1,136 @@
+<?php namespace ProcessWire;
+
+class ListerNativeDateFormat extends WireData implements Module, ConfigurableModule {
+
+	/**
+	 * Module information
+	 */
+	public static function getModuleInfo() {
+		return array(
+			'title' => 'Lister Native Date Format',
+			'summary' => 'Allows the date format for "created", "modified" and "published" columns to be set within a Lister.',
+			'version' => '0.1.0',
+			'author' => 'Robin Sallis',
+			'href' => 'https://github.com/Toutouwai/ListerNativeDateFormat',
+			'icon' => 'calendar',
+			'autoload' => 'template=admin',
+			'requires' => 'ProcessWire>=3.0.16, PHP>=5.4.0',
+		);
+	}
+
+	/**
+	 * Construct
+	 */
+	public function __construct() {
+		parent::__construct();
+		
+		// Default date options
+		$this->date_options = "rel";
+		$this->date_options .= "\nY-m-d";
+		$this->date_options .= "\nY-m-d H:i:s";
+		$this->date_options .= "\nd/m/Y";
+		$this->date_options .= "\nd/m/Y H:i:s";
+		
+		// Default saved Lister date formats
+		$this->lister_formats = [];
+	}
+
+	/**
+	 * Ready
+	 */
+	public function ready() {
+		$this->addHookBefore('ProcessPageLister::execute', $this, 'beforeListerExecute');
+		$this->addHookAfter('ProcessPageLister::execute', $this, 'afterListerExecute');
+	}
+
+	/**
+	 * Before ProcessPageLister::execute
+	 * Set native date format
+	 *
+	 * @param HookEvent $event
+	 */
+	protected function beforeListerExecute(HookEvent $event) {
+		/** @var ProcessPageLister $lister */
+		$lister = $event->object;
+		$input = $this->wire()->input;
+		$config = $this->wire()->config;
+		$page_name = $this->wire()->page->name;
+
+		// Load assets
+		$info = $this->getModuleInfo();
+		$version = $info['version'];
+		$config->styles->add($config->urls->{$this} . "{$this}.css?v={$version}");
+		$config->scripts->add($config->urls->{$this} . "{$this}.js?v={$version}");
+
+		if($this->wire()->config->ajax) {
+			// Set native date format if saved in this module
+			if(!empty($this->lister_formats[$page_name])) $lister->nativeDateFormat = $this->lister_formats[$page_name];
+		} else {
+			// If date format has been submitted
+			$format = $input->post('lndf_format');
+			if($format && in_array($format, $this->getDateOptions())) {
+				// Set format to module config
+				$lister_formats = [$page_name => $format];
+				$lister_formats = array_merge($this->lister_formats, $lister_formats);
+				$this->wire()->modules->saveConfig($this, 'lister_formats', $lister_formats);
+				// Redirect
+				$this->wire()->session->redirect($input->url(true));
+			}
+		}
+	}
+
+	/**
+	 * After ProcessPageLister::execute
+	 * Add date format control
+	 *
+	 * @param HookEvent $event
+	 */
+	protected function afterListerExecute(HookEvent $event) {
+		if($this->wire()->config->ajax) return;
+		$tooltip = $this->_('Date format for native fields');
+		$options = '';
+		foreach($this->getDateOptions() as $option) {
+			$options .= "<li>$option</li>";
+		}
+		$out = <<<EOT
+<div id="lndf-controls">
+	<div id="lndf-dropdown-outer">
+		<i id="lndf-dropdown-toggle" class="fa fa-calendar" uk-tooltip="title: $tooltip; pos: left"></i>
+		<ul id="lndf-dropdown">$options</ul>
+	</div>
+	<form id="lndf" method="post" action="./">
+		<input type="hidden" name="lndf_format" id="lndf_format">
+	</form>
+</div>
+EOT;
+		$event->return = $out . $event->return;
+	}
+
+	/**
+	 * Get date options from module config as an array
+	 */
+	protected function getDateOptions() {
+		return array_filter(explode("\n", str_replace("\r", "", $this->date_options)));
+	}
+
+	/**
+	 * Config inputfields
+	 *
+	 * @param InputfieldWrapper $inputfields
+	 */
+	public function getModuleConfigInputfields($inputfields) {
+		$modules = $this->wire()->modules;
+
+		/* @var InputfieldTextarea $f */
+		$f = $modules->get('InputfieldTextarea');
+		$f_name = 'date_options';
+		$f->name = $f_name;
+		$f->label = $this->_('Date options');
+		$f->description = sprintf($this->_('The date format options that will be available in the dropdown. Enter one date format per line. Date formats must be compatible with %s.'), '[wireDate()](https://processwire.com/api/ref/functions/wire-date/)');
+		$f->icon = 'calendar';
+		$f->value = $this->$f_name;
+		$inputfields->add($f);
+
+	}
+
+}
