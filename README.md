@@ -18,4 +18,6 @@ The Lister will remember your chosen date format the next time you visit the Lis
 
 In the "Date options" field in the module config, enter a list of date formats that are compatible with [wireDate()](https://processwire.com/api/ref/functions/wire-date/), one format per line.
 
+The default date format used by Lister is "rel".
+
 ![Date options](https://user-images.githubusercontent.com/1538852/149245884-9e03e3e8-3f12-4b27-ac9e-a310d9ff266e.png)
