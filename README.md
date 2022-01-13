@@ -6,7 +6,7 @@ Allows the date format for "created", "modified" and "published" columns to be s
 
 ## Why?
 
-Lister formats the "created", "modified" and "published" columns as relative time strings and doesn't provide an easy way to change this without writing code. Sometimes a value like "3 weeks ago" is not precise enough you want to see an exact date/time in these columns, perhaps only temporarily before switching back to a relative date.
+Lister formats the "created", "modified" and "published" columns as relative time strings and doesn't provide an easy way to change this without writing code. Sometimes a value like "3 weeks ago" is not precise enough and you want to see an exact date/time in these columns, perhaps only temporarily before switching back to a relative date.
 
 ## Details
 
