@@ -21,3 +21,5 @@ In the "Date options" field in the module config, enter a list of date formats t
 The default date format used by Lister is "rel".
 
 ![Date options](https://user-images.githubusercontent.com/1538852/149245884-9e03e3e8-3f12-4b27-ac9e-a310d9ff266e.png)
+
+You can also set a default date format for native fields which will apply to all Listers that haven't yet had a date format chosen from the dropdown.
