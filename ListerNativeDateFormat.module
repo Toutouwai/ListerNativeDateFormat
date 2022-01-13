@@ -9,7 +9,7 @@ class ListerNativeDateFormat extends WireData implements Module, ConfigurableMod
 		return array(
 			'title' => 'Lister Native Date Format',
 			'summary' => 'Allows the date format for "created", "modified" and "published" columns to be set within a Lister.',
-			'version' => '0.1.0',
+			'version' => '0.1.1',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/ListerNativeDateFormat',
 			'icon' => 'calendar',
@@ -23,14 +23,14 @@ class ListerNativeDateFormat extends WireData implements Module, ConfigurableMod
 	 */
 	public function __construct() {
 		parent::__construct();
-		
+
 		// Default date options
 		$this->date_options = "rel";
 		$this->date_options .= "\nY-m-d";
 		$this->date_options .= "\nY-m-d H:i:s";
 		$this->date_options .= "\nd/m/Y";
 		$this->date_options .= "\nd/m/Y H:i:s";
-		
+
 		// Default saved Lister date formats
 		$this->lister_formats = [];
 	}
@@ -64,14 +64,15 @@ class ListerNativeDateFormat extends WireData implements Module, ConfigurableMod
 
 		if($this->wire()->config->ajax) {
 			// Set native date format if saved in this module
+			if($this->default_date_format) $lister->nativeDateFormat = $this->default_date_format;
 			if(!empty($this->lister_formats[$page_name])) $lister->nativeDateFormat = $this->lister_formats[$page_name];
 		} else {
 			// If date format has been submitted
 			$format = $input->post('lndf_format');
 			if($format && in_array($format, $this->getDateOptions())) {
 				// Set format to module config
-				$lister_formats = [$page_name => $format];
-				$lister_formats = array_merge($this->lister_formats, $lister_formats);
+				$lister_formats = $this->lister_formats;
+				$lister_formats[$page_name] = $format;
 				$this->wire()->modules->saveConfig($this, 'lister_formats', $lister_formats);
 				// Redirect
 				$this->wire()->session->redirect($input->url(true));
@@ -129,6 +130,16 @@ EOT;
 		$f->description = sprintf($this->_('The date format options that will be available in the dropdown. Enter one date format per line. Date formats must be compatible with %s.'), '[wireDate()](https://processwire.com/api/ref/functions/wire-date/)');
 		$f->icon = 'calendar';
 		$f->value = $this->$f_name;
+		$inputfields->add($f);
+
+		/* @var InputfieldTextarea $f */
+		$f = $modules->get('InputfieldText');
+		$f_name = 'default_date_format';
+		$f->name = $f_name;
+		$f->label = $this->_('Default date format');
+		$f->description = sprintf($this->_('Populate this if you want to set a native date format for all Listers when not set per Lister by this module. Date format must be compatible with %s.'), '[wireDate()](https://processwire.com/api/ref/functions/wire-date/)');
+		$f->value = $this->$f_name;
+		$f->collapsed = Inputfield::collapsedBlank;
 		$inputfields->add($f);
 
 	}
