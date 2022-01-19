@@ -9,7 +9,7 @@ class ListerNativeDateFormat extends WireData implements Module, ConfigurableMod
 		return array(
 			'title' => 'Lister Native Date Format',
 			'summary' => 'Allows the date format for "created", "modified" and "published" columns to be set within a Lister.',
-			'version' => '0.1.1',
+			'version' => '0.1.2',
 			'author' => 'Robin Sallis',
 			'href' => 'https://github.com/Toutouwai/ListerNativeDateFormat',
 			'icon' => 'calendar',
@@ -88,18 +88,21 @@ class ListerNativeDateFormat extends WireData implements Module, ConfigurableMod
 	 */
 	protected function afterListerExecute(HookEvent $event) {
 		if($this->wire()->config->ajax) return;
+		$input = $this->wire()->input;
+		$url = $input->url(true);
+		$class = $input->get('minimal') ? 'minimal' : 'normal';
 		$tooltip = $this->_('Date format for native fields');
 		$options = '';
 		foreach($this->getDateOptions() as $option) {
 			$options .= "<li>$option</li>";
 		}
 		$out = <<<EOT
-<div id="lndf-controls">
+<div id="lndf-controls" class="$class">
 	<div id="lndf-dropdown-outer">
 		<i id="lndf-dropdown-toggle" class="fa fa-calendar" uk-tooltip="title: $tooltip; pos: left"></i>
 		<ul id="lndf-dropdown">$options</ul>
 	</div>
-	<form id="lndf" method="post" action="./">
+	<form id="lndf" method="post" action="$url">
 		<input type="hidden" name="lndf_format" id="lndf_format">
 	</form>
 </div>

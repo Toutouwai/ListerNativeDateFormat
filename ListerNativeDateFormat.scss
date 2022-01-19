@@ -1,5 +1,7 @@
 #pw-content-body { position:relative; }
-#lndf-controls { position:absolute; right:0; top:8px; z-index:100; }
+#lndf-controls { position:absolute; right:0; top:8px; z-index:100;
+	&.minimal { top:-14px; }
+}
 #lndf-dropdown-toggle { cursor:pointer; width:30px; height:30px; line-height:30px; text-align:right;
 	&:hover { color:#e83561; }
 }
