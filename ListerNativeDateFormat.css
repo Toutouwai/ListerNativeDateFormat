@@ -2,12 +2,14 @@
   position: relative; }
 
 #lndf-controls {
-  position: absolute;
-  right: 0;
-  top: 8px;
+  float: right;
+  top: 7px;
+  margin-left: 6px;
+  position: relative;
   z-index: 100; }
   #lndf-controls.minimal {
-    top: -14px; }
+    top: -4px;
+    right: 10px; }
 
 #lndf-dropdown-toggle {
   cursor: pointer;
@@ -40,3 +42,6 @@
   text-align: right; }
   #lndf-dropdown-outer:hover #lndf-dropdown {
     display: block; }
+
+#ProcessListerResults .MarkupPagerNav {
+  clear: right; }

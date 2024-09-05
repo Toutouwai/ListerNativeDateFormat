@@ -1,6 +1,6 @@
 #pw-content-body { position:relative; }
-#lndf-controls { position:absolute; right:0; top:8px; z-index:100;
-	&.minimal { top:-14px; }
+#lndf-controls { float:right; top:7px; margin-left:6px; position:relative; z-index:100;
+	&.minimal { top:-4px; right:10px; }
 }
 #lndf-dropdown-toggle { cursor:pointer; width:30px; height:30px; line-height:30px; text-align:right;
 	&:hover { color:#e83561; }
@@ -14,4 +14,7 @@
 	&:hover {
 		#lndf-dropdown { display:block; }
 	}
+}
+#ProcessListerResults {
+	.MarkupPagerNav { clear:right; }
 }
